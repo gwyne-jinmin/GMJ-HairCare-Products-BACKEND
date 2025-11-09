@@ -1,45 +1,42 @@
-// server.js
-const express = require("express");
-require("dotenv").config(); // Load environment variables
-const cors = require("cors"); // ✅ Add this
-const productRoutes = require("./routes/product.routes");
+import express from "express"; // or const express = require("express");
+import cors from "cors";       // make sure cors is imported
+import productRoutes from "./routes/product.routes.js"; // adjust path
+import dotenv from "dotenv";
+dotenv.config();
 
-// Initialize the Express application
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// ✅ Enable CORS
-// Allow requests from all origins (for testing)
-// Later, you can restrict it to your frontend URL for security
-app.use(cors());
-// OR to allow only your Vercel frontend:
-// app.use(cors({ origin: "https://gmj-hair-care-product-frontend-git-main-gwyne-jinmins-projects.vercel.app" }));
+// CORS config
+const corsOptions = {
+  origin: "https://gmj-hair-care-product-frontend.vercel.app", // your deployed frontend
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true, // if you need cookies/auth
+};
+app.use(cors(corsOptions));
 
-// Middleware to parse JSON requests
+// JSON middleware
 app.use(express.json());
-
-// Middleware to parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-// Simple root route
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the Simple Products REST API." });
-});
-
-// Primary API route for products
+// Routes
 app.use("/api/products", productRoutes);
 
-// Global Error Handler Middleware
+// Root route
+app.get("/", (req, res) => {
+  res.json({ message: "API is running" });
+});
+
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
-    error: "Something went wrong!",
+    error: "Something went wrong",
     detail: process.env.NODE_ENV !== "production" ? err.message : null,
   });
 });
 
-// Start the server
+// Start server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-  console.log(`Access the API at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
