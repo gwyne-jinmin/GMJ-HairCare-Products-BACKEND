@@ -7,38 +7,39 @@ dotenv.config();
 
 const app = express();
 
-// CORS configuration
-const corsOptions = {
-  origin: "https://gmj-hair-care-product-frontend-1-m36d07qdv.vercel.app", // exact deployed frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true, // if you need cookies/auth
-};
+// Allow both local dev and deployed frontend
+const allowedOrigins = [
+  "http://localhost:5173", // your local frontend (if testing locally)
+  "https://gmj-hair-care-product-frontend-1-m36d07qdv.vercel.app" // deployed frontend
+];
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"]
+}));
 
-// Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/products", productRoutes);
 
-// Root route
 app.get("/", (req, res) => {
   res.json({ message: "API is running" });
 });
 
-// Global error handler
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
-    error: "Something went wrong",
-    detail: process.env.NODE_ENV !== "production" ? err.message : null,
-  });
+  res.status(500).json({ error: "Something went wrong", detail: err.message });
 });
 
-// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
