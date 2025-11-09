@@ -13,7 +13,8 @@ const app = express();
 // CORS Configuration
 // ------------------------
 const allowedOrigins = [
-  "https://gmj-hair-care-product-frontend-1-5f6u0sxz4.vercel.app"
+  "https://gmj-hair-care-product-frontend-1-5f6u0sxz4.vercel.app",
+  "https://gmj-hair-care-product-frontend-1.vercel.app" // add exact deployed frontend
 ];
 
 app.use(
@@ -72,3 +73,13 @@ app.use((err, req, res, next) => {
 // ------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.get("/test-db", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT 1+1 AS result");
+    res.json({ success: true, result: rows[0].result });
+  } catch (err) {
+    console.error("DB connection failed:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
