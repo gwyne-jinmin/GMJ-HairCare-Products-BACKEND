@@ -9,7 +9,6 @@ const app = express();
 
 // Allow both local dev and deployed frontend
 const allowedOrigins = [
-  "http://localhost:5173", // your local frontend (if testing locally)
   "https://gmj-hair-care-product-frontend-1-m36d07qdv.vercel.app" // deployed frontend
 ];
 
