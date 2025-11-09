@@ -1,20 +1,29 @@
-// config/db.config.js
-const mysql = require("mysql2/promise");
+const { Pool } = require("pg");
 require("dotenv").config();
 
-// Create the connection pool
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
-console.log("MySQL Connection Pool Created.");
+(asnyc () => {
+ try {
+   const client = await pool.connect();
+   console.log(" PostgreSQL connection establised successfully!");
+   client.release();
+ } catch (error) {
+   console.error("PostgreSQL connection failed");
+   console.error("Error details:",error.message);
+   if (error.code === "ECONNREFUSED") {
+     console.error(" Check if Neon server is online or your connection string is correct.");
+   } else if (error.code === "28P01") {
+     console.error(" Invalid username or password in your DATABASE_URL.");
+   } else if (error.code === "ENOTFOUND") {
+     console.error(" The host is incorrect or unreachable from your server.");
+   }
+ }
+})();
 
-// Export the pool so models can use it
 module.exports = pool;
