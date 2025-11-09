@@ -1,20 +1,22 @@
-import express from "express"; // or const express = require("express");
-import cors from "cors";       // make sure cors is imported
-import productRoutes from "./routes/product.routes.js"; // adjust path
+import express from "express";
+import cors from "cors";
+import productRoutes from "./routes/product.routes.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
 
-// CORS config
+// CORS configuration
 const corsOptions = {
-  origin: "https://gmj-hair-care-product-frontend.vercel.app", // your deployed frontend
+  origin: "https://gmj-hair-care-product-frontend-1-m36d07qdv.vercel.app", // exact deployed frontend URL
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true, // if you need cookies/auth
 };
+
 app.use(cors(corsOptions));
 
-// JSON middleware
+// Middleware to parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -26,7 +28,7 @@ app.get("/", (req, res) => {
   res.json({ message: "API is running" });
 });
 
-// Error handler
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
