@@ -1,17 +1,24 @@
 // server.js
 const express = require("express");
 require("dotenv").config(); // Load environment variables
+const cors = require("cors"); // ✅ Add this
 const productRoutes = require("./routes/product.routes");
 
 // Initialize the Express application
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✅ Enable CORS
+// Allow requests from all origins (for testing)
+// Later, you can restrict it to your frontend URL for security
+app.use(cors());
+// OR to allow only your Vercel frontend:
+// app.use(cors({ origin: "https://gmj-hair-care-product-frontend-git-main-gwyne-jinmins-projects.vercel.app" }));
+
 // Middleware to parse JSON requests
-// This is essential for handling JSON requests for POST/PUT operations
 app.use(express.json());
 
-// Middleware to parse URL-encoded bodies (If you needed form data)
+// Middleware to parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
 // Simple root route
@@ -22,7 +29,7 @@ app.get("/", (req, res) => {
 // Primary API route for products
 app.use("/api/products", productRoutes);
 
-// Global Error Handler Middleware (Good practice for catching unhandled errors)
+// Global Error Handler Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
