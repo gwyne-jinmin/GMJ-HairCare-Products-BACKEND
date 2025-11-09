@@ -9,7 +9,7 @@ const app = express();
 
 // Allow both local dev and deployed frontend
 const allowedOrigins = [
-  "https://gmj-hair-care-product-frontend-1-m36d07qdv.vercel.app" // deployed frontend
+   "https://gmj-hair-care-product-frontend-1-5f6u0sxz4.vercel.app" // deployed frontend
 ];
 
 app.use(cors({
